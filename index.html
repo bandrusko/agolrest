@@ -52,9 +52,21 @@
         }
       };
 
+      const popupTemplate = {
+        title: "{Name}",
+        content: "{Description}"
+      }
+      const attributes = {
+        Name: "Minneapolis Center",
+        Description: "The center point of downtown Minneapolis, MN."
+      }
+
       const pointGraphic = new Graphic({
         geometry: point,
-        symbol: simpleMarkerSymbol
+        symbol: simpleMarkerSymbol,
+
+        attributes: attributes,
+        popupTemplate: popupTemplate
       });
 
       graphicsLayer.add(pointGraphic);
