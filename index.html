@@ -75,20 +75,17 @@
 
       // Define a pop-up for usaeduLayer
       const popupEduusa = {
-        "title": "EDUs",
-        "content": "<b>City:</b> {CITY}<br><b>Name:</b> {INSTNM}<br>"
-      }
+        "title": "{INSTNM}",
+        "content": "<b>City:</b> {CITY}<br><b>County Code:</b> {COUNTYCD}<br><b>CSA:</b> {CSA}"
+      };
 
-      //adding the Const for the feature layer
+      // Feature Layer with correct endpoint and fields
       const usaeduLayer = new FeatureLayer({
         url: "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Colleges_and_Universities_View/FeatureServer/0",
-
-        //adding the popup here
-        outFields: ["CITY", "INSTNM"],
+        outFields: ["INSTNM", "CITY", "COUNTYCD", "CSA"],
         popupTemplate: popupEduusa
       });
 
-      //adding the feature layer to the map
       map.add(usaeduLayer);
 
       //Basemap Gallery
