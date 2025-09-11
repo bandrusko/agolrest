@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -14,6 +14,8 @@
       "esri/config",
       "esri/Map",
       "esri/views/MapView",
+      "esri/Graphic",
+      "esri/layers/GraphicsLayer",
       "esri/widgets/BasemapGallery",
       "esri/widgets/Locate",
       "esri/widgets/Search"
@@ -31,6 +33,31 @@
         zoom: 14,
         container: "viewDiv"
       });
+
+      const graphicsLayer = new GraphicsLayer();
+      map.add(graphicsLayer);
+
+      const point = { //Create a point  
+        type: "point",
+        longitude: -93.250689,    //long lat of Stevie Ray Vaughan Statue
+        latitude: 44.9
+      };
+
+      const simpleMarkerSymbol = {
+        type: "simple-marker",
+        color: [0, 0, 139],  // Color of blues rock
+        outline: {
+          color: [255, 255, 255], // White  
+          width: 1
+        }
+      };
+
+      const pointGraphic = new Graphic({
+        geometry: point,
+        symbol: simpleMarkerSymbol
+      });
+
+      graphicsLayer.add(pointGraphic);
 
       //Basemap Gallery
       const basemapGallery = new BasemapGallery({
