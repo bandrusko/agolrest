@@ -39,16 +39,17 @@
 
       const point = { //Create a point  
         type: "point",
-        longitude: -93.250689,    //long lat of Stevie Ray Vaughan Statue
-        latitude: 44.9
+        longitude: -93.2581,    //long lat of Minneapolis center
+        latitude: 44.9866
       };
 
       const simpleMarkerSymbol = {
         type: "simple-marker",
-        color: [0, 0, 139],  // Color of blues rock
+        color: [255, 0, 0, 0.9],   // bright red, slightly transparent
+        size: 14,                  // larger size (default is ~8)
         outline: {
-          color: [255, 255, 255], // White  
-          width: 1
+          color: [255, 255, 255],  // white outline for contrast
+          width: 2
         }
       };
 
@@ -58,7 +59,7 @@
       }
       const attributes = {
         Name: "Minneapolis Center",
-        Description: "The center point of downtown Minneapolis, MN."
+        Description: "The center point of Minneapolis, MN."
       }
 
       const pointGraphic = new Graphic({
