@@ -79,11 +79,27 @@
         "content": "<b>City:</b> {CITY}<br><b>County Code:</b> {COUNTYCD}<br><b>CSA:</b> {CSA}"
       };
 
-      // Feature Layer with correct endpoint and fields
+      // Custom renderer for campuses
+      const campusRenderer = {
+        type: "simple",  // simple renderer, same symbol for all features
+        symbol: {
+          type: "simple-marker",
+          style: "circle",
+          color: [0, 120, 255, 0.9],   // bright blue
+          size: 10,                    // bigger than default (default is ~6)
+          outline: {
+            color: [255, 255, 255],    // white outline for contrast
+            width: 2
+          }
+        }
+      };
+
+      // Feature Layer with custom symbology
       const usaeduLayer = new FeatureLayer({
         url: "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Colleges_and_Universities_View/FeatureServer/0",
         outFields: ["INSTNM", "CITY", "COUNTYCD", "CSA"],
-        popupTemplate: popupEduusa
+        popupTemplate: popupEduusa,
+        renderer: campusRenderer
       });
 
       map.add(usaeduLayer);
