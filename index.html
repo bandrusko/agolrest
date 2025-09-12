@@ -77,20 +77,21 @@
         "content": "<b>City:</b> {CITY}<br><b>County Code:</b> {COUNTYCD}<br><b>CSA:</b> {CSA}"
       };
 
-      // Custom renderer for campuses
-      const campusRenderer = {
-        type: "simple",  // simple renderer, same symbol for all features
-        symbol: {
-          type: "simple-marker",
-          style: "circle",
-          color: [0, 120, 255, 0.9],   // bright blue
-          size: 10,                    // bigger than default (default is ~6)
-          outline: {
-            color: [255, 255, 255],    // white outline for contrast
-            width: 2
-          }
+      // Custom renderer for airports
+      const airportRenderer = {
+        "type": "simple",
+        "symbol": {
+          "type": "picture-marker",
+          "url": "https://github.com/bandrusko/agol/blob/main/local_airport_24dp_1F1F1F.png",
+          "width": "18px",
+          "height": "18px"
         }
       };
+
+      const airportLayer = new FeatureLayer({
+          url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/US_Airports/FeatureServer",
+          renderer: airportRenderer
+        });
 
       // Feature Layer with custom symbology
       const usaeduLayer = new FeatureLayer({
