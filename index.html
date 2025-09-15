@@ -35,7 +35,7 @@
       const graphicsLayer = new GraphicsLayer();
       map.add(graphicsLayer);
 
-      //Add a sample point
+      //Random colored point
       const point = {
         type: "point",
         longitude: -93.2581,
@@ -65,16 +65,16 @@
       const polygon = {
         type: "polygon",
         rings: [
-          [-93.3, 45.1],  // x,y
+          [-93.3, 45.1],
           [-93.12, 45.1],
           [-93.22, 45.2],
-          [-93.3, 45.1]   // close the polygon
+          [-93.3, 45.1] 
         ]
       };
 
       const polygonSymbol = {
-        type: "simple-fill",  // autocasts as new SimpleFillSymbol()
-        color: [227, 139, 79, 0.6],  // orange fill, semi-transparent
+        type: "simple-fill",
+        color: [227, 139, 79, 0.6],  
         outline: {
           color: [255, 255, 255],
           width: 2
@@ -93,7 +93,6 @@
 
       graphicsLayer.add(polygonGraphic);
 
-      // ---- Add a random polyline ----
       const polyline = {
         type: "polyline",
         paths: [
@@ -106,7 +105,7 @@
 
       const lineSymbol = {
         type: "simple-line",
-        color: [0, 0, 255], // blue
+        color: [0, 0, 255],
         width: 3
       };
 
@@ -125,7 +124,12 @@
       //Popup for education layer
       const popupEduusa = {
         "title": "{INSTNM}",
-        "content": "<b>City:</b> {CITY}<br><b>County Code:</b> {COUNTYCD}<br><b>CSA:</b> {CSA}"
+        "content": `
+          <b>City:</b> {CITY}<br>
+          <b>State:</b> {STABBR}<br>
+          <b>County Code:</b> {COUNTYCD}<br>
+          <b>Institution Size:</b> {INSTSIZE}<br>
+        `
       };
 
       //Renderer for airports
@@ -139,7 +143,7 @@
         }
       };
 
-      //const to make the airport labels
+      //Const to make the airport labels
       const airportLabels = {
         symbol: {
           type: "text",
@@ -163,10 +167,20 @@
         url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/US_Airports/FeatureServer",
         renderer: airportRenderer,
 
-        definitionExpression: "Fac_Type = 'AIRPORT'", //adding sql to filter for airports
-        labelingInfo: [airportLabels] //adding the labels
+        definitionExpression: "Fac_Type = 'AIRPORT'", //Query for airports
+        labelingInfo: [airportLabels] //Labels for the airports
       });
       map.add(airportLayer);
+
+      const myDataLayer = new FeatureLayer({
+        url: "https://webgis.dot.state.mn.us/65agsf1/rest/services/sdw_govnt/COUNTY/FeatureServer",
+        outFields: ["*"],
+        popupTemplate: {
+          title: "{Name}",
+          content: "{Description}"
+        }
+      });
+      map.add(myDataLayer);
 
       //Renderer for heliports
       const heliportRenderer = {
@@ -179,7 +193,7 @@
         }
       };
 
-      //const to make the airport labels
+      //Const to make the heliport labels
       const heliportLabels = {
         symbol: {
           type: "text",
@@ -203,12 +217,12 @@
         url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/US_Airports/FeatureServer",
         renderer: heliportRenderer,
 
-        definitionExpression: "Fac_Type = 'HELIPORT'", //adding sql to filter for heliports
-        labelingInfo: [heliportLabels] //adding the labels
+        definitionExpression: "Fac_Type = 'HELIPORT'", //Query for heliports
+        labelingInfo: [heliportLabels] //Labels for the heliports
       });
       map.add(heliportLayer);
 
-      //Simple renderer for campuses (blue circles)
+      //Simple renderer for campuses
       const campusRenderer = {
         type: "simple",
         symbol: {
