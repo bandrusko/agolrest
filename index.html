@@ -44,6 +44,7 @@
 
       const simpleMarkerSymbol = {
         type: "simple-marker",
+        style: "square",
         color: [255, 0, 0, 0.9],
         size: 14,
         outline: { color: [255, 255, 255], width: 2 }
@@ -60,6 +61,66 @@
       });
 
       graphicsLayer.add(pointGraphic);
+
+      const polygon = {
+        type: "polygon",
+        rings: [
+          [-93.3, 45.1],  // x,y
+          [-93.12, 45.1],
+          [-93.22, 45.2],
+          [-93.3, 45.1]   // close the polygon
+        ]
+      };
+
+      const polygonSymbol = {
+        type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+        color: [227, 139, 79, 0.6],  // orange fill, semi-transparent
+        outline: {
+          color: [255, 255, 255],
+          width: 2
+        }
+      };
+
+      const polygonGraphic = new Graphic({
+        geometry: polygon,
+        symbol: polygonSymbol,
+        attributes: {
+          Name: "Random Polygon",
+          Description: "This is a sample polygon area."
+        },
+        popupTemplate: { title: "{Name}", content: "{Description}" }
+      });
+
+      graphicsLayer.add(polygonGraphic);
+
+      // ---- Add a random polyline ----
+      const polyline = {
+        type: "polyline",
+        paths: [
+          [-93.555, 45.0],
+          [-93.545, 44.9],
+          [-93.525, 45.0],
+          [-93.505, 44.9]
+        ]
+      };
+
+      const lineSymbol = {
+        type: "simple-line",
+        color: [0, 0, 255], // blue
+        width: 3
+      };
+
+      const lineGraphic = new Graphic({
+        geometry: polyline,
+        symbol: lineSymbol,
+        attributes: {
+          Name: "Random Polyline",
+          Description: "This is a sample polyline path."
+        },
+        popupTemplate: { title: "{Name}", content: "{Description}" }
+      });
+
+      graphicsLayer.add(lineGraphic);
 
       //Popup for education layer
       const popupEduusa = {
@@ -112,7 +173,7 @@
         type: "simple",
         symbol: {
           type: "picture-marker",
-          url: "https://github.com/bandrusko/agol/blob/main/front.png",
+          url: "https://raw.githubusercontent.com/bandrusko/agol/main/helicopter.png",
           width: "18px",
           height: "18px"
         }
@@ -160,7 +221,7 @@
 
       const usaeduLayer = new FeatureLayer({
         url: "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Colleges_and_Universities_View/FeatureServer/0",
-        outFields: ["INSTNM", "CITY", "COUNTYCD", "CSA"],
+        outFields: ["INSTNM", "CITY", "COUNTYCD", "INSTSIZE", "WEBBADDR"],
         popupTemplate: popupEduusa,
         renderer: campusRenderer
       });
