@@ -11,7 +11,6 @@
 
   <script>
     require([
-      "esri/config",
       "esri/Map",
       "esri/views/MapView",
       "esri/Graphic",
@@ -20,7 +19,7 @@
       "esri/widgets/BasemapGallery",
       "esri/widgets/Locate",
       "esri/widgets/Search"
-    ], function (esriConfig, Map, MapView, Graphic, GraphicsLayer, FeatureLayer, BasemapGallery, Locate, Search) {
+    ], function (Map, MapView, Graphic, GraphicsLayer, FeatureLayer, BasemapGallery, Locate, Search) {
 
       const map = new Map({
         basemap: "osm"
@@ -29,100 +28,108 @@
       const view = new MapView({
         map: map,
         center: [-93.2581, 44.9866],
-        zoom: 6,   // instead of 14
+        zoom: 6,
         container: "viewDiv"
       });
 
       const graphicsLayer = new GraphicsLayer();
       map.add(graphicsLayer);
 
-      const point = { //Create a point  
+      //Add a sample point
+      const point = {
         type: "point",
-        longitude: -93.2581,    //long lat of Minneapolis center
+        longitude: -93.2581,
         latitude: 44.9866
       };
 
       const simpleMarkerSymbol = {
         type: "simple-marker",
-        color: [255, 0, 0, 0.9],   // bright red, slightly transparent
-        size: 14,                  // larger size (default is ~8)
-        outline: {
-          color: [255, 255, 255],  // white outline for contrast
-          width: 2
-        }
+        color: [255, 0, 0, 0.9],
+        size: 14,
+        outline: { color: [255, 255, 255], width: 2 }
       };
-
-      const popupTemplate = {
-        title: "{Name}",
-        content: "{Description}"
-      }
-      const attributes = {
-        Name: "Minneapolis Center",
-        Description: "The center point of Minneapolis, MN."
-      }
 
       const pointGraphic = new Graphic({
         geometry: point,
         symbol: simpleMarkerSymbol,
-
-        attributes: attributes,
-        popupTemplate: popupTemplate
+        attributes: {
+          Name: "Minneapolis Center",
+          Description: "The center point of Minneapolis, MN."
+        },
+        popupTemplate: { title: "{Name}", content: "{Description}" }
       });
 
       graphicsLayer.add(pointGraphic);
 
-      // Define a pop-up for usaeduLayer
+      //Popup for education layer
       const popupEduusa = {
         "title": "{INSTNM}",
         "content": "<b>City:</b> {CITY}<br><b>County Code:</b> {COUNTYCD}<br><b>CSA:</b> {CSA}"
       };
 
-      // Custom renderer for airports
+      //Renderer for airports
       const airportRenderer = {
-        "type": "simple",
-        "symbol": {
-          "type": "picture-marker",
-          "url": "https://github.com/bandrusko/agol/blob/main/local_airport_24dp_1F1F1F.png",
-          "width": "18px",
-          "height": "18px"
+        type: "simple",
+        symbol: {
+          type: "picture-marker",
+          url: "https://raw.githubusercontent.com/bandrusko/agol/main/local_airport_24dp_1F1F1F.png",
+          width: "18px",
+          height: "18px"
+        }
+      };
+
+      //const to make the airport labels
+      const airportLabels = {
+        symbol: {
+          type: "text",
+          color: "#FFFFFF",
+          haloColor: "#5E8D74",
+          haloSize: "2px",
+          font: {
+            size: "12px",
+            family: "Noto Sans",
+            style: "italic",
+            weight: "normal"
+          }
+        },
+        labelPlacement: "above-center",
+        labelExpressionInfo: {
+          expression: "$feature.Fac_Name"
         }
       };
 
       const airportLayer = new FeatureLayer({
-          url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/US_Airports/FeatureServer",
-          renderer: airportRenderer
-        });
+        url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/US_Airports/FeatureServer",
+        renderer: airportRenderer,
 
-      // Feature Layer with custom symbology
+        definitionExpression: "Fac_Type = 'AIRPORT'", //adding sql to filter for airports
+        labelingInfo: [airportLabels] //adding the labels
+      });
+      map.add(airportLayer);
+
+      //Simple renderer for campuses (blue circles)
+      const campusRenderer = {
+        type: "simple",
+        symbol: {
+          type: "simple-marker",
+          color: "blue",
+          size: 6,
+          outline: { color: "white", width: 1 }
+        }
+      };
+
       const usaeduLayer = new FeatureLayer({
         url: "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Colleges_and_Universities_View/FeatureServer/0",
         outFields: ["INSTNM", "CITY", "COUNTYCD", "CSA"],
         popupTemplate: popupEduusa,
         renderer: campusRenderer
       });
-
       map.add(usaeduLayer);
 
-      //Basemap Gallery
-      const basemapGallery = new BasemapGallery({
-        view: view
-      });
-      view.ui.add(basemapGallery, "top-right");
-
-      //Locate Button
-      const locateWidget = new Locate({
-        view: view
-      });
-      view.ui.add(locateWidget, "top-left");
-
-      //Search Widget
-      const searchWidget = new Search({
-        view: view
-      });
-      view.ui.add(searchWidget, {
-        position: "top-left",
-        index: 2
-      });
+      //Widgets
+      view.ui.add(new BasemapGallery({ view }), "top-right");
+      view.ui.add(new Locate({ view }), "top-left");
+      view.ui.add(new Search({ view }), { position: "top-left", index: 2 });
     });
   </script>
 
