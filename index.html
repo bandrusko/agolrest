@@ -10,6 +10,7 @@
   <script src="https://js.arcgis.com/4.25/"></script>
 
   <script>
+    //Load the required ArcGIS API so the map can be built
     require([
       "esri/Map",
       "esri/views/MapView",
@@ -19,20 +20,23 @@
       "esri/widgets/BasemapGallery",
       "esri/widgets/Locate",
       "esri/widgets/Search",
-      "esri/widgets/Editor"
-    ], function (Map, MapView, Graphic, GraphicsLayer, FeatureLayer, BasemapGallery, Locate, Search, Editor) {
+      "esri/widgets/Editor",
+      "esri/widgets/Legend"
+    ], function (Map, MapView, Graphic, GraphicsLayer, FeatureLayer, BasemapGallery, Locate, Search, Editor, Legend) {
 
       const map = new Map({
         basemap: "osm"
       });
 
+      //Creating the starting view for the map
       const view = new MapView({
         map: map,
         center: [-93.2581, 44.9866],
-        zoom: 6,
+        zoom: 11,
         container: "viewDiv"
       });
 
+      // Adding a graphics layer to hold the graphics
       const graphicsLayer = new GraphicsLayer();
       map.add(graphicsLayer);
 
@@ -43,6 +47,7 @@
         latitude: 44.9866
       };
 
+      //Random colored point color and outline details
       const simpleMarkerSymbol = {
         type: "simple-marker",
         style: "square",
@@ -51,6 +56,7 @@
         outline: { color: [255, 255, 255], width: 2 }
       };
 
+      //Random colored point graphic with attributes and popup
       const pointGraphic = new Graphic({
         geometry: point,
         symbol: simpleMarkerSymbol,
@@ -61,8 +67,10 @@
         popupTemplate: { title: "{Name}", content: "{Description}" }
       });
 
+      //Adding the point graphic to the layer
       graphicsLayer.add(pointGraphic);
 
+      //Random polygon coordinates
       const polygon = {
         type: "polygon",
         rings: [
@@ -73,6 +81,7 @@
         ]
       };
 
+      //Random colored polygon color and outline details
       const polygonSymbol = {
         type: "simple-fill",
         color: [227, 139, 79, 0.6],
@@ -82,6 +91,7 @@
         }
       };
 
+      //Random colored polygon graphic with attributes and popup
       const polygonGraphic = new Graphic({
         geometry: polygon,
         symbol: polygonSymbol,
@@ -92,8 +102,10 @@
         popupTemplate: { title: "{Name}", content: "{Description}" }
       });
 
+      //Adding the polygon graphic to the layer
       graphicsLayer.add(polygonGraphic);
 
+      //Random polyline coordinates
       const polyline = {
         type: "polyline",
         paths: [
@@ -104,12 +116,14 @@
         ]
       };
 
+      //Random colored line color and width details
       const lineSymbol = {
         type: "simple-line",
         color: [0, 0, 255],
         width: 3
       };
 
+      //Random colored line graphic with attributes and popup
       const lineGraphic = new Graphic({
         geometry: polyline,
         symbol: lineSymbol,
@@ -164,6 +178,7 @@
         }
       };
 
+      //Adding the airport layer with query and labels
       const airportLayer = new FeatureLayer({
         url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/US_Airports/FeatureServer",
         renderer: airportRenderer,
@@ -173,32 +188,61 @@
       });
       map.add(airportLayer);
 
-      //adding the const for the feature layer
+      //Adds labels to myAirports layer
+      const myAirportsLabels = {
+        symbol: {
+          type: "text", 
+          color: "#000000",
+          font: {
+            size: "14px",
+            family: "Noto Sans",
+            style: "italic",
+            weight: "bold"
+          }
+        },
+        labelPlacement: "above-center",
+        labelExpressionInfo: {
+          expression: "$feature.AirportCode"
+        }
+      };
+
+      //Renderer for my airports
+      const myAirportsRenderer = {
+        type: "simple",
+        symbol: {
+          type: "picture-marker",
+          url: "https://raw.githubusercontent.com/bandrusko/agolrest/main/myairport.png",
+          width: "36px",
+          height: "36px"
+        }
+      };
+
+      //Adding the const for the feature layer with labeling info
       const myAirports = new FeatureLayer({
         url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/My_AirportsL3/FeatureServer",
-
-        //adding the popup here
         outFields: ["AirportCode"],
-
+        renderer: myAirportsRenderer,
+        labelingInfo: [myAirportsLabels]
       });
 
-      //adding the feature layer to the map
+      //Adding the feature layer to the map
       map.add(myAirports);
 
-      // Set the point layer's LayerInfo
+      //Sets the point's layer information
       const pointInfos = {
         layer: myAirports
       }
 
-      // Begin Editor constructor
+      //Adds editor constructor to the map
       const editor = new Editor({
         view: view,
         layerInfos: [pointInfos]
-      }); // End Editor constructor
+      });
 
-      // Add the widget to the view
+      //Add the widget to the view
       view.ui.add(editor, "top-right");
 
+      /*
       const myDataLayer = new FeatureLayer({
         url: "https://webgis.dot.state.mn.us/65agsf1/rest/services/sdw_govnt/COUNTY/FeatureServer",
         outFields: ["*"],
@@ -208,6 +252,7 @@
         }
       });
       map.add(myDataLayer);
+      */
 
       //Renderer for heliports
       const heliportRenderer = {
@@ -240,12 +285,13 @@
         }
       };
 
+      //Adding the heliport layer with query and labels
       const heliportLayer = new FeatureLayer({
         url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/US_Airports/FeatureServer",
         renderer: heliportRenderer,
 
-        definitionExpression: "Fac_Type = 'HELIPORT'", //Query for heliports
-        labelingInfo: [heliportLabels] //Labels for the heliports
+        definitionExpression: "Fac_Type = 'HELIPORT'",
+        labelingInfo: [heliportLabels]
       });
       map.add(heliportLayer);
 
@@ -260,6 +306,7 @@
         }
       };
 
+      //Adding the education layer with popup and renderer
       const usaeduLayer = new FeatureLayer({
         url: "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Colleges_and_Universities_View/FeatureServer/0",
         outFields: ["INSTNM", "CITY", "COUNTYCD", "INSTSIZE", "WEBBADDR"],
@@ -272,6 +319,19 @@
       view.ui.add(new BasemapGallery({ view }), "top-right");
       view.ui.add(new Locate({ view }), "top-left");
       view.ui.add(new Search({ view }), { position: "top-left", index: 2 });
+
+      //Adds legend to the map
+      const legend = new Legend({
+        view: view,
+        layerInfos: [
+          { layer: airportLayer, title: "Airports" },
+          { layer: heliportLayer, title: "Heliports" },
+          { layer: usaeduLayer, title: "Colleges & Universities" },
+          { layer: myAirports, title: "My Airports" }
+        ]
+      });
+
+      view.ui.add(legend, "bottom-left");
     });
   </script>
 
